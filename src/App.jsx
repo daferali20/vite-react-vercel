@@ -1,43 +1,29 @@
 import React, { useState, useEffect } from 'react';
 
 export default function App() {
-  const [stockData, setStockData] = useState(null);
-  const [error, setError] = useState(null);
-
-  const apiKey = import.meta.env.VITE_TWELVE_API_KEY; // تأكد أنك أضفته في .env
+  const [recommendations, setRecommendations] = useState([]);
 
   useEffect(() => {
-    const fetchStock = async () => {
-      try {
-        const response = await fetch(
-          `https://api.twelvedata.com/price?symbol=AAPL&apikey=${apiKey}`
-        );
-        const data = await response.json();
-        if (data.price) {
-          setStockData(data.price);
-        } else {
-          setError("لم يتم العثور على البيانات.");
-        }
-      } catch (err) {
-        setError("حدث خطأ أثناء جلب البيانات.");
-      }
-    };
-
-    fetchStock();
-    const interval = setInterval(fetchStock, 10000); // تحديث كل 10 ثوانٍ
+    // بيانات وهمية كل 5 ثوانٍ (يمكنك استبدالها بـ API لاحقًا)
+    const interval = setInterval(() => {
+      const randomStock = ['AAPL', 'TSLA', 'MSFT', 'GOOG'][Math.floor(Math.random() * 4)];
+      const action = Math.random() > 0.5 ? 'شراء' : 'بيع';
+      const rec = `${new Date().toLocaleTimeString()} - ${action} ${randomStock}`;
+      setRecommendations((prev) => [rec, ...prev]);
+    }, 5000);
 
     return () => clearInterval(interval);
-  }, [apiKey]);
+  }, []);
 
   return (
     <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
-      <h1>📈 سعر سهم AAPL الآن</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {stockData ? (
-        <p>السعر الحالي: {stockData} $</p>
-      ) : (
-        <p>جاري تحميل البيانات...</p>
-      )}
+      <h1>📈 توصيات الأسهم بالذكاء الاصطناعي</h1>
+      <p>أهلاً بك! سيتم عرض التوصيات هنا بشكل لحظي قريباً.</p>
+      <ul>
+        {recommendations.map((rec, index) => (
+          <li key={index}>{rec}</li>
+        ))}
+      </ul>
     </div>
   );
 }
