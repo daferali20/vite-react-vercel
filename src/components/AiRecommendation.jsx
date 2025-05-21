@@ -1,15 +1,15 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
-export default function AiRecommendation() {
+function AiRecommendation() {
   const [recommendation, setRecommendation] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const askAI = async () => {
+  const getRecommendation = async () => {
     setLoading(true);
     setRecommendation('');
 
     try {
-      const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -19,39 +19,36 @@ export default function AiRecommendation() {
           model: 'gpt-3.5-turbo',
           messages: [
             {
-              role: 'system',
-              content: 'أنت خبير في الأسهم، تقدم توصيات مختصرة بناءً على السعر الحالي.',
-            },
-            {
               role: 'user',
-              content: 'سعر سهم TSLA الآن 172 دولار، هل تنصح بشراء أو بيع؟',
+              content: 'أعطني توصية لحظية لسهم مناسب للشراء اليوم بناءً على بيانات السوق.',
             },
           ],
-          temperature: 0.7,
         }),
       });
 
-      const data = await res.json();
-      const reply = data.choices?.[0]?.message?.content;
-      console.log(data);
-      setRecommendation(reply || 'لم يتم توليد توصية.');
+      const data = await response.json();
+
+      const aiReply = data?.choices?.[0]?.message?.content || 'لم يتم توليد توصية.';
+      setRecommendation(aiReply);
     } catch (error) {
-      console.error(error);
-      setRecommendation('حدث خطأ أثناء الاتصال بالذكاء الاصطناعي.');
+      console.error('حدث خطأ أثناء جلب التوصية:', error);
+      setRecommendation('تعذر جلب التوصية حالياً.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: '2rem', fontFamily: 'Arial' }}>
-      <h2>🤖 توصيات الذكاء الاصطناعي</h2>
-      <button onClick={askAI} disabled={loading}>
-        {loading ? 'جاري التحليل...' : 'اطلب توصية'}
+    <div>
+      <h2>🤖 توصية الذكاء الاصطناعي</h2>
+      <button onClick={getRecommendation} disabled={loading}>
+        {loading ? 'جاري التحليل...' : 'احصل على توصية'}
       </button>
-      {recommendation && (
-        <p style={{ marginTop: '1rem', direction: 'rtl' }}>📢 التوصية: {recommendation}</p>
-      )}
+      <p style={{ marginTop: '1rem', fontWeight: 'bold' }}>
+        📢 التوصية: {recommendation}
+      </p>
     </div>
   );
 }
+
+export default AiRecommendation;
