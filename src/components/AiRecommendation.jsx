@@ -33,6 +33,7 @@ export default function AiRecommendation() {
 
       const data = await res.json();
       const reply = data.choices?.[0]?.message?.content;
+      console.log(data);
       setRecommendation(reply || 'لم يتم توليد توصية.');
     } catch (error) {
       console.error(error);
