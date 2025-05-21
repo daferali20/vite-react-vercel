@@ -1,12 +1,11 @@
-import AiRecommendation from './components/AiRecommendation';
+import StockRecommendationBox from './StockRecommendationBox';
 
 function App() {
   return (
     <div>
-      <AiRecommendation />
-     
+      <h1>منصة توصيات الأسهم</h1>
+      <StockRecommendationBox />
     </div>
   );
 }
 
-export default App;
