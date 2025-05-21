@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 
-function AiRecommendation() {
-  const [recommendation, setRecommendation] = useState('');
+function StockRecommendationBox() {
+  const [recommendation, setRecommendation] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const getRecommendation = async () => {
     setLoading(true);
-    setRecommendation('');
+    setRecommendation(null);
 
     try {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -20,45 +20,55 @@ function AiRecommendation() {
           messages: [
             {
               role: 'user',
-              content: 'أعطني توصية لحظية لسهم مناسب للشراء اليوم بناءً على بيانات السوق.',
+              content: `
+أعطني توصية لحظية لسهم مناسب للشراء اليوم بصيغة JSON تحتوي على:
+{
+  "symbol": "رمز السهم",
+  "current_price": "سعر السوق الحالي",
+  "buy_price": "سعر الشراء المقترح",
+  "target_price": "هدف البيع الأولي",
+  "stop_loss": "وقف الخسارة"
+}
+              `.trim(),
             },
           ],
+          temperature: 0.7,
         }),
       });
-<div className="recommendation-box">
-  <h3>🧠 التوصية اليوم</h3>
-  <ul>
-    <li><strong>السهم:</strong> AAPL</li>
-    <li><strong>سعر السوق:</strong> $182.10</li>
-    <li><strong>سعر الشراء المقترح:</strong> $181.50</li>
-    <li><strong>هدف البيع الأولي:</strong> $190.00</li>
-    <li><strong>وقف الخسارة:</strong> $178.00</li>
-  </ul>
-</div>
 
       const data = await response.json();
-
-      const aiReply = data?.choices?.[0]?.message?.content || 'لم يتم توليد توصية.';
-      setRecommendation(aiReply);
+      const result = JSON.parse(data.choices[0].message.content);
+      setRecommendation(result);
     } catch (error) {
-      console.error('حدث خطأ أثناء جلب التوصية:', error);
-      setRecommendation('تعذر جلب التوصية حالياً.');
+      console.error('خطأ في جلب التوصية:', error);
+      setRecommendation({ error: 'تعذر جلب التوصية حالياً.' });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div>
-      <h2>🤖 توصية الذكاء الاصطناعي</h2>
+    <div style={{ padding: '1rem', border: '1px solid #ccc', borderRadius: '10px', maxWidth: '400px', margin: '2rem auto', textAlign: 'right', direction: 'rtl' }}>
+      <h2>📊 توصية الذكاء الاصطناعي</h2>
       <button onClick={getRecommendation} disabled={loading}>
-        {loading ? 'جاري التحليل...' : 'احصل على توصية'}
+        {loading ? '...جاري التحليل' : '🔍 احصل على توصية'}
       </button>
-      <p style={{ marginTop: '1rem', fontWeight: 'bold' }}>
-        📢 التوصية: {recommendation}
-      </p>
+
+      {recommendation && !recommendation.error && (
+        <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem' }}>
+          <li><strong>📈 السهم:</strong> {recommendation.symbol}</li>
+          <li><strong>💲 سعر السوق:</strong> {recommendation.current_price}</li>
+          <li><strong>🛒 سعر الشراء:</strong> {recommendation.buy_price}</li>
+          <li><strong>🎯 هدف البيع:</strong> {recommendation.target_price}</li>
+          <li><strong>🛑 وقف الخسارة:</strong> {recommendation.stop_loss}</li>
+        </ul>
+      )}
+
+      {recommendation?.error && (
+        <p style={{ marginTop: '1rem', color: 'red' }}>{recommendation.error}</p>
+      )}
     </div>
   );
 }
 
-export default AiRecommendation;
+export default StockRecommendationBox;
