@@ -25,6 +25,16 @@ function AiRecommendation() {
           ],
         }),
       });
+<div className="recommendation-box">
+  <h3>🧠 التوصية اليوم</h3>
+  <ul>
+    <li><strong>السهم:</strong> AAPL</li>
+    <li><strong>سعر السوق:</strong> $182.10</li>
+    <li><strong>سعر الشراء المقترح:</strong> $181.50</li>
+    <li><strong>هدف البيع الأولي:</strong> $190.00</li>
+    <li><strong>وقف الخسارة:</strong> $178.00</li>
+  </ul>
+</div>
 
       const data = await response.json();
 
