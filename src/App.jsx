@@ -1,5 +1,5 @@
-import StockRecommendationBox from './StockRecommendationBox';
-
+import StockRecommendationBox from './AiRecommendation';
+/*StockRecommendationBox*/
 function App() {
   return (
     <div>
