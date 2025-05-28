@@ -1,4 +1,4 @@
-import StockRecommendationBox from './AiRecommendation';
+import StockRecommendationBox from './components/AiRecommendation';
 /*StockRecommendationBox*/
 function App() {
   return (
